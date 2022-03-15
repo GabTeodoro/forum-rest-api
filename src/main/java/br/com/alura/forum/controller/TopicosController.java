@@ -1,13 +1,17 @@
 package br.com.alura.forum.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -38,20 +43,23 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 
 	@GetMapping
-	public List<TopicoDto> lista(String curso) {
+	@Cacheable(value = "listaDeTopicos")
+	public Page<TopicoDto> lista(@RequestParam(required = false) String curso,
+			@PageableDefault(page = 0, size = 10) Pageable pageable) {
 
 		if (curso == null) {
 
-			return TopicoDto.ToTopico((List<Topico>) topicoRepository.findAll());
+			return TopicoDto.ToTopico(topicoRepository.findAll(pageable));
 
 		} else {
 
-			return TopicoDto.ToTopico((List<Topico>) topicoRepository.findByCursoNome(curso));
+			return TopicoDto.ToTopico(topicoRepository.findByCursoNome(curso, pageable));
 		}
 
 	}
 
 	@PostMapping
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoRequest topicoRequest,
 			UriComponentsBuilder uriBuilder) {
 
@@ -77,6 +85,7 @@ public class TopicosController {
 
 	@PutMapping("/{id}")
 	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id,
 			@RequestBody @Valid AtualizaTopicoRequest topicoRequest) {
 
@@ -93,6 +102,7 @@ public class TopicosController {
 	}
 
 	@DeleteMapping("/{id}")
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 
 		Optional<Topico> topico = topicoRepository.findById(id);
