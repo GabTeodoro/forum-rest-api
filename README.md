@@ -31,6 +31,7 @@ determindado assunto na área de TI e então, outros usuários poderam cadastrar
 
 ## Tecnologias
 * Java 11
+* Maven 3.6.3
 * H2Database
 * Intellij IDEA
 * Spring Framework
