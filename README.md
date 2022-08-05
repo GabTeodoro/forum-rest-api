@@ -11,7 +11,7 @@
 ## Sobre
 <p align="center">
 Implementar um forum de perguntas de uma plataforma de cursos fictícia onde os usuários poderam cadastrar suas perguntas (tópicos) e dúvidas sobre 
-determindado assunto na área de TI e outros usuários poderma cadastrar respostas para essas perguntas.
+determindado assunto na área de TI e então, outros usuários poderam cadastrar respostas para essas perguntas.
 </p>
 <h4 align="center">Status
 	🚧  Finalizado!  🚧
